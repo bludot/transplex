@@ -1,0 +1,129 @@
+version: 2.1
+references:
+  node: &node
+    docker:
+      - image: cimg/node:14.15.4
+orbs:
+  node: circleci/node@4.1.0
+jobs:
+  test:
+    <<: *node
+    environment:
+      ENV: local
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - restore_cache:
+          keys:
+            - v1-deps-{{ checksum "yarn.lock" }}
+      - run:
+          command: yarn install
+          name: Run YARN install
+      - save_cache:
+          key: v1-deps-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+      - run:
+          name: install codecov
+          command: |
+            family=$(uname -s | tr '[:upper:]' '[:lower:]')
+            os="windows"
+            [[ $family == "darwin" ]] && os="macos"
+            [[ $family == "linux" ]] && os="linux"
+            echo "Detected ${os}"
+
+            filename="codecov"
+            [[ $os == "windows" ]] && filename+=".exe"
+            [[ $os == "macos" ]] && brew install gpg
+            curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import # One-time step
+            curl -Os "https://uploader.codecov.io/latest/${os}/${filename}"
+            curl -Os "https://uploader.codecov.io/latest/${os}/${filename}.SHA256SUM"
+            curl -Os "https://uploader.codecov.io/latest/${os}/${filename}.SHA256SUM.sig"
+            gpg --verify $filename.SHA256SUM.sig $filename.SHA256SUM
+            shasum -a 256 -c $filename.SHA256SUM ||
+              sha256sum -c $filename.SHA256SUM
+            chmod +x $filename
+      - run:
+          name: Check Link
+          command: |
+            yarn lint
+      - run:
+          name: Build migrations
+          command: |
+            yarn build
+      - run:
+          name: Initializing db
+          command: |
+            yarn typeorm migration:run
+      - run:
+          command: yarn run test:cov
+          name: Run YARN tests
+      - run:
+          name: upload codecov
+          command: |
+            ./codecov \
+              -Q "codecov-circleci-orb-2.0.0" \
+              -t "${CODECOV_TOKEN}" \
+              -n "${CIRCLE_BUILD_NUM}" \
+              -F ""
+                              
+  testbuild:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - run:
+          name: Set app version
+          command: |
+            export VERSION=$(node -p "require('./package.json').version" | tr -d \'\n\')
+      - run:
+          name: test build
+          command: |
+            docker build --build-arg SERVICE_VERSION=$VERSION -t testbuild .
+  deploy:
+    docker:
+      - image: cimg/node:14.15.4
+    environment:
+      REPOSITORY_USER: admin
+      REPOSITORY_ADDRESS: harbor.floret.dev
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 19.03.13
+      - run:
+          command: yarn install
+          name: Run YARN install
+      - run: npx semantic-release
+      - run:
+          name: Login to Container Registry
+          command: |
+            docker login -u $REPOSITORY_USER -p $REPOSITORY_PASSWORD $REPOSITORY_ADDRESS
+      - run:
+          name: push image
+          command: |
+            export VERSION=$(node -p "require('./package.json').version" | tr -d \'\n\')
+            docker build --build-arg SERVICE_VERSION=$VERSION -t $REPOSITORY_ADDRESS/transplex/transplex-api:$VERSION .
+            docker push $REPOSITORY_ADDRESS/transplex/transplex-api:$VERSION
+workflows:
+  test_and_deploy:
+    jobs:
+      - test:
+          filters:
+            tags:
+              only: /^([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)$/
+      - testbuild:
+          filters:
+            tags:
+              only: /^([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)$/
+      - deploy:
+          filters:
+            branches:
+              only: main
+            tags:
+              only: /^([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)\.([0-9]|[1-9][0-9]*)$/
+          requires:
+            - test
+            - testbuild
