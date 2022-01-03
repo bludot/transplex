@@ -29,13 +29,13 @@ module.exports = {
   synchronize: false,
   ...(process.env.ENV !== 'local'
     ? { entities: ['modules/**/*.entity.{ts,js}'] }
-    : { entities: ['dist/modules/**/*.entity.{ts,js}'] }),
+    : { entities: ['dist/src/modules/**/*.entity.{ts,js}'] }),
   ...(process.env.ENV !== 'local'
     ? {
         migrations: ['migrations/*.{ts,js}'],
       }
     : {
-        migrations: ['dist/migrations/*.{ts,js}'],
+        migrations: ['dist/src/migrations/*.{ts,js}'],
       }),
   cli: {
     ...(process.env.ENV !== 'local'

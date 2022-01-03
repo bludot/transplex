@@ -46,7 +46,7 @@ const ssl: object = {
           synchronize: false,
           ...(process.env.ENV !== 'local'
             ? { entities: ['modules/**/*.entity.{ts,js}'] }
-            : { entities: ['dist/modules/**/*.entity.{ts,js}'] }),
+            : { entities: ['dist/src/modules/**/*.entity.{ts,js}'] }),
           migrations: ['migration/*.js'],
           cli: {
             migrationsDir: 'migration',

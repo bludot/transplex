@@ -3,4 +3,5 @@ export enum MediaType {
   ANIME_MOVIE = 'anime_movie',
   MOVIE = 'movie',
   TV_SHOW = 'tv_show',
+  TV = 'TV',
 }

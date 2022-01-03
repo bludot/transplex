@@ -14,20 +14,20 @@ export class Watchlist {
   @Generated('uuid')
   id: string
 
-  @Column()
-  name: string
+  @Column({ name: 'media_id' })
+  mediaId: string
 
-  @Column()
-  query: string
+  @Column({ name: 'index_data', type: 'jsonb' })
+  indexData: any
 
-  @Column()
-  user: string
+  @CreateDateColumn({ name: 'last_run' })
+  lastRun: Date
 
   @Column()
   items: number
 
-  @Column()
-  type: string
+  @Column({ name: 'times_ran' })
+  timesRan: number
 
   @Column({ default: false })
   completed: boolean

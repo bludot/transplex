@@ -7,6 +7,7 @@ import { TransmissionConfig } from './transmission.config'
 @Injectable()
 export class TransmissionService {
   private transmission: Transmission
+  public downloadDir: string
   constructor(private readonly config: ConfigService<TransmissionConfig>) {
     this.transmission = new Transmission({
       host: config.env.TRANSMISSION_HOST,
@@ -16,26 +17,27 @@ export class TransmissionService {
       url: config.env.TRANSMISSION_URL,
       ssl: config.env.TRANSMISSION_SSL,
     })
+    this.downloadDir = config.env.TRANSMISSION_DOWNLOADS
   }
 
   processDownloadDir(type: MediaType) {
     switch (type) {
       case MediaType.ANIME_SHOW:
-        return '/nfs/home/anime'
+        return 'anime'
       case MediaType.ANIME_MOVIE:
-        return '/nfs/home/anime movies'
+        return 'anime movies'
       case MediaType.MOVIE:
-        return '/nfs/home/movies'
+        return 'movies'
       case MediaType.TV_SHOW:
-        return '/nfs/home/series'
+        return 'series'
       default:
-        return '/nfs/home/movies'
+        return 'movies'
     }
   }
 
   addMagnet(magnet: string, type: MediaType) {
     const options = {
-      'download-dir': this.processDownloadDir(type),
+      'download-dir': this.downloadDir, // this.processDownloadDir(type),
     }
 
     return new Promise((resolve, reject) => {
@@ -63,5 +65,27 @@ export class TransmissionService {
         resolve(args)
       })
     })
+  }
+  getStatusType(type) {
+    switch (type) {
+      case 0:
+        return 'STOPPED'
+      case 1:
+        return 'CHECK_WAIT'
+      case 2:
+        return 'CHECK'
+      case 3:
+        return 'DOWNLOAD_WAIT'
+      case 4:
+        return 'DOWNLOAD'
+      case 5:
+        return 'SEED_WAIT'
+      case 6:
+        return 'SEED'
+      case 7:
+        return 'ISOLATED'
+      default:
+        return 'UNKNOWN'
+    }
   }
 }

@@ -13,12 +13,12 @@ export class WatchlistRepository extends Repository<Watchlist> {
     return watchitem
       ? {
           id: watchitem.id,
-          name: watchitem.name,
-          query: watchitem.query,
-          user: watchitem.user,
+          mediaId: watchitem.mediaId,
+          indexData: watchitem.indexData,
+          lastRun: watchitem.lastRun,
+          timesRan: watchitem.timesRan,
           items: watchitem.items,
           completed: watchitem.completed,
-          type: watchitem.type,
           updatedAt: watchitem.updatedAt,
         }
       : null
@@ -32,12 +32,12 @@ export class WatchlistRepository extends Repository<Watchlist> {
     return watchitem
       ? {
           id: watchitem.id,
-          name: watchitem.name,
-          query: watchitem.query,
-          user: watchitem.user,
+          mediaId: watchitem.mediaId,
+          indexData: watchitem.indexData,
+          lastRun: watchitem.lastRun,
+          timesRan: watchitem.timesRan,
           items: watchitem.items,
           completed: watchitem.completed,
-          type: watchitem.type,
           updatedAt: watchitem.updatedAt,
         }
       : null
@@ -47,12 +47,12 @@ export class WatchlistRepository extends Repository<Watchlist> {
     const watchitems: Watchlist[] = await this.find()
     return watchitems.map((watchitem) => ({
       id: watchitem.id,
-      name: watchitem.name,
-      query: watchitem.query,
-      user: watchitem.user,
+      mediaId: watchitem.mediaId,
+      indexData: watchitem.indexData,
+      lastRun: watchitem.lastRun,
+      timesRan: watchitem.timesRan,
       items: watchitem.items,
       completed: watchitem.completed,
-      type: watchitem.type,
       updatedAt: watchitem.updatedAt,
     }))
   }
@@ -65,12 +65,12 @@ export class WatchlistRepository extends Repository<Watchlist> {
     })
     return watchitems.map((watchitem) => ({
       id: watchitem.id,
-      name: watchitem.name,
-      query: watchitem.query,
-      user: watchitem.user,
+      mediaId: watchitem.mediaId,
+      indexData: watchitem.indexData,
+      lastRun: watchitem.lastRun,
+      timesRan: watchitem.timesRan,
       items: watchitem.items,
       completed: watchitem.completed,
-      type: watchitem.type,
       updatedAt: watchitem.updatedAt,
     }))
   }
@@ -85,18 +85,18 @@ export class WatchlistRepository extends Repository<Watchlist> {
     // eslint-disable-next-line
     let cleanBody: Watchlist = _.omit(body, nullFields) as Watchlist
     // eslint-disable-next-line
-    let savedWatchitem: Watchlist = await this.findOne({ query: cleanBody.query, name: cleanBody.name })
+    let savedWatchitem: Watchlist = await this.findOne({ mediaId: cleanBody.mediaId })
     if (savedWatchitem) {
       await this.update({ id: savedWatchitem.id }, cleanBody)
       const watchitem = { ...savedWatchitem, ...cleanBody }
       return {
         id: watchitem.id,
-        name: watchitem.name,
-        query: watchitem.query,
-        user: watchitem.user,
+        mediaId: watchitem.mediaId,
+        indexData: watchitem.indexData,
+        lastRun: watchitem.lastRun,
+        timesRan: watchitem.timesRan,
         items: watchitem.items,
         completed: watchitem.completed,
-        type: watchitem.type,
         updatedAt: watchitem.updatedAt,
       }
     }
@@ -110,12 +110,12 @@ export class WatchlistRepository extends Repository<Watchlist> {
     savedWatchitem = null
     return {
       id: saved.id,
-      name: saved.name,
-      query: saved.query,
-      user: saved.user,
+      mediaId: saved.mediaId,
+      indexData: saved.indexData,
+      lastRun: saved.lastRun,
+      timesRan: saved.timesRan,
       items: saved.items,
       completed: saved.completed,
-      type: saved.type,
       updatedAt: saved.updatedAt,
     }
   }

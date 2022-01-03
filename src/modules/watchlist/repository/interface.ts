@@ -1,10 +1,10 @@
 export interface IWatchlist {
   readonly id: string
-  readonly name: string
-  readonly query: string
-  readonly user: string
+  readonly mediaId: string
+  readonly indexData: any
+  readonly lastRun: Date
+  readonly timesRan: number
   readonly items: number
   readonly completed: boolean
-  readonly type: string
   readonly updatedAt: Date
 }

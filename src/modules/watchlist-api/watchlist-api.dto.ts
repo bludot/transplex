@@ -5,6 +5,10 @@ import { MediaType } from '../transmission/interfaces'
 export class AddToWatchlistDto {
   @ApiProperty()
   @IsString()
+  readonly mediaId: string
+
+  @ApiProperty()
+  @IsString()
   readonly name: string
 
   @ApiProperty()

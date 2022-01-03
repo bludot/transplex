@@ -27,6 +27,7 @@ export class WatchlistService {
   }
 
   async addWatchList(
+    mediaId: string,
     name: string,
     query: string,
     user: string,
@@ -35,22 +36,33 @@ export class WatchlistService {
   ) {
     console.log(name, query, user, items, type)
     const watchitem = await this.upsert({
-      name,
-      query,
-      user,
+      indexData: {
+        name,
+        query,
+        user,
+        type,
+      },
       items: items || 0,
-      type,
+
       completed: false,
     })
     await this.updateWatchlist()
     return watchitem
   }
 
+  getWatchlists() {
+    return this.repo.findAll()
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_5AM)
   async updateWatchlist() {
     const watchlists = await this.repo.findAllIncomplete()
     for (const watchlist of watchlists) {
-      const { id, name, query, user, items } = watchlist
+      const {
+        id,
+        indexData: { name, query, user },
+        items,
+      } = watchlist
       const searchResults = await this.nyaapiService.searchByUser(
         user,
         query,
@@ -77,9 +89,11 @@ export class WatchlistService {
       if (mergedTorrentAndSearch.length === 0) {
         await this.upsert({
           id,
-          name,
-          query,
-          user,
+          indexData: {
+            name,
+            query,
+            user,
+          },
           items,
           completed: true,
           updatedAt: new Date(),
@@ -91,7 +105,7 @@ export class WatchlistService {
           mergedTorrentAndSearch.map((item) => {
             this.transmissionService.addMagnet(
               item.magnet,
-              watchlist.type as MediaType,
+              watchlist.indexData.type as MediaType,
             )
           }),
         )

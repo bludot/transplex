@@ -25,4 +25,8 @@ export class TransmissionConfig {
   @Expose()
   @IsBooleanString()
   readonly TRANSMISSION_SSL: boolean
+
+  @Expose()
+  @IsString()
+  readonly TRANSMISSION_DOWNLOADS: string
 }

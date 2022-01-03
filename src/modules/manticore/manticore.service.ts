@@ -223,6 +223,8 @@ export class ManticoreService {
       },
       sort: ['_score', 'id'],
     })
+    return result
+    /*
     return {
       ...result,
       hits: {
@@ -232,6 +234,6 @@ export class ManticoreService {
           (a: any, b: any) => a._source.anidbid === b._source.anidbid,
         ),
       },
-    }
+    }*/
   }
 }

@@ -1,10 +1,10 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm'
 
-export class createWatchlistTable1638796915468 implements MigrationInterface {
+export class createMediaTable1639283595080 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: 'watchlist',
+        name: 'media',
         columns: [
           {
             name: 'id',
@@ -18,23 +18,19 @@ export class createWatchlistTable1638796915468 implements MigrationInterface {
             type: 'varchar',
           },
           {
-            name: 'query',
+            name: 'type',
             type: 'varchar',
           },
           {
-            name: 'user',
-            type: 'varchar',
-          },
-          {
-            name: 'items',
-            type: 'integer',
-          },
-          {
-            name: 'completed',
+            name: 'anime',
             type: 'boolean',
           },
           {
-            name: 'type',
+            name: 'watch',
+            type: 'boolean',
+          },
+          {
+            name: 'anidb_id',
             type: 'varchar',
           },
           {
@@ -53,6 +49,6 @@ export class createWatchlistTable1638796915468 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable('watchlist')
+    await queryRunner.dropTable('media')
   }
 }

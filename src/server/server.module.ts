@@ -9,6 +9,9 @@ import { TypeormConnectorModule } from '../modules/postgres-connector/postgres-c
 import { ManticoreModule } from '../modules/manticore/manticore.module'
 import { SearchApiModule } from '../modules/search-api/search-api.module'
 import { MetadataApiModule } from '../modules/metadata-api/metadata-api.module'
+import { MediaApiModule } from '../modules/media-api/media-api.module'
+import { DownloadsApiModule } from '../modules/downloads-api/downloads-api.module'
+import { EventsModule } from '../modules/events/events.module'
 import { ServerConfig } from './server.config'
 
 @Module({
@@ -26,6 +29,9 @@ export class ServerModule {
         WatchlistApiModule,
         SearchApiModule,
         MetadataApiModule,
+        MediaApiModule,
+        DownloadsApiModule,
+        EventsModule,
       ],
     }
   }
