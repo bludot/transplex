@@ -9,6 +9,7 @@ import { TransmissionService } from '../transmission/transmission.service'
 import { UtilsService } from '../utils/utils.service'
 import { MediaType } from '../transmission/interfaces'
 import { EventsGateway } from './events.gateway'
+import { ImportService } from '../import/import.service'
 
 @Injectable()
 export class EventsService {
@@ -18,6 +19,7 @@ export class EventsService {
     private readonly transmissionService: TransmissionService,
     private readonly eventsGateway: EventsGateway,
     private readonly utilsService: UtilsService,
+    private readonly importService: ImportService,
   ) {}
   @Cron(CronExpression.EVERY_5_SECONDS)
   async UpdateStatus() {
@@ -59,6 +61,7 @@ export class EventsService {
                 ),
               })),
             })
+            this.importService.importDownload(media.id)
           }
           return
         }

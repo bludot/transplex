@@ -105,3 +105,6 @@ dist
 
 # jetbrains / idea removal
 .idea/
+
+# transmission
+transmission/
