@@ -1,0 +1,6 @@
+FROM lscr.io/linuxserver/plex
+COPY ./plex-scripts/hama.bundle.sh /hama.bundle.sh
+RUN apt update && apt install git unzip -y
+RUN chmod +x /hama.bundle.sh
+RUN /hama.bundle.sh
+

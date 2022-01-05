@@ -12,6 +12,7 @@ import { MetadataApiModule } from '../modules/metadata-api/metadata-api.module'
 import { MediaApiModule } from '../modules/media-api/media-api.module'
 import { DownloadsApiModule } from '../modules/downloads-api/downloads-api.module'
 import { EventsModule } from '../modules/events/events.module'
+import { ImportApiModule } from '../modules/import-api/import-api.module'
 import { ServerConfig } from './server.config'
 
 @Module({
@@ -32,6 +33,7 @@ export class ServerModule {
         MediaApiModule,
         DownloadsApiModule,
         EventsModule,
+        ImportApiModule,
       ],
     }
   }

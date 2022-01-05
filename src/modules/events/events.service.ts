@@ -6,9 +6,9 @@ import { DownloadsService } from '../downloads/downloads.service'
 import { MediaService } from '../media/media.service'
 import { EventType } from '../events/event.types'
 import { TransmissionService } from '../transmission/transmission.service'
-import { EventsGateway } from './events.gateway'
 import { UtilsService } from '../utils/utils.service'
 import { MediaType } from '../transmission/interfaces'
+import { EventsGateway } from './events.gateway'
 
 @Injectable()
 export class EventsService {

@@ -52,4 +52,7 @@ export class DownloadsService {
   updateDownload(download: Partial<IDownloads>) {
     return this.repo.upsert(download)
   }
+  async getDownloadByMediaId(mediaId: string) {
+    return this.repo.findOne({ mediaId })
+  }
 }

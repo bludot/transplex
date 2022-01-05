@@ -88,4 +88,11 @@ export class TransmissionService {
         return 'UNKNOWN'
     }
   }
+  async getTorrentByHash(hash: string) {
+    const { torrents } = (await this.getTorrents())[0]
+    return torrents.find((t) => t.hashString === hash)
+  }
+  transmissionDownloads() {
+    return this.config.env.TRANSMISSION_DOWNLOADS
+  }
 }

@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common'
 import { DownloadsService } from '../downloads/downloads.service'
+import { ImportService } from '../import/import.service'
 import { MediaService } from '../media/media.service'
 import { MediaType } from '../transmission/interfaces'
 import { Media } from './media-api.dto'
@@ -9,6 +10,7 @@ export class MediaApiController {
   constructor(
     private readonly mediaService: MediaService,
     private readonly downloadService: DownloadsService,
+    private readonly importService: ImportService,
   ) {}
 
   @Get('/')
@@ -35,7 +37,7 @@ export class MediaApiController {
     )
     return {
       ...media,
-      files: await this.mediaService.getCurrentFiles(decodeURIComponent(name)),
+      files: await this.importService.getLocalFiles(decodeURIComponent(name)),
       status: await this.downloadService.downloadStatusByMediaId(
         media.id,
         media.type as MediaType,
