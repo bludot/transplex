@@ -8,8 +8,8 @@ import { EventType } from '../events/event.types'
 import { TransmissionService } from '../transmission/transmission.service'
 import { UtilsService } from '../utils/utils.service'
 import { MediaType } from '../transmission/interfaces'
-import { EventsGateway } from './events.gateway'
 import { ImportService } from '../import/import.service'
+import { EventsGateway } from './events.gateway'
 
 @Injectable()
 export class EventsService {
@@ -33,7 +33,8 @@ export class EventsService {
     }))
     await Bluebird.map(
       downloadAndTorrent,
-      async (data, i) => {
+      async (data) => {
+        console.log(data)
         const torrentStatus = this.transmissionService.getStatusType(
           data.torrent.status,
         )
@@ -56,7 +57,7 @@ export class EventsService {
               files: data.torrent.files.map((file) => ({
                 ...file,
                 data: this.utilsService.parseFileNameCTRL(
-                  file.name.split('/')[1],
+                  file.name.match(/.*\/(.*)/)[1] || file.name,
                   media.type as MediaType,
                 ),
               })),
@@ -84,7 +85,7 @@ export class EventsService {
             files: data.torrent.files.map((file) => ({
               ...file,
               data: this.utilsService.parseFileNameCTRL(
-                file.name.split('/')[1],
+                file.name.match(/.*\/(.*)/)[1] || file.name,
                 media.type as MediaType,
               ),
             })),

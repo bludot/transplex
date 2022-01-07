@@ -32,7 +32,7 @@ export class DownloadsService {
       torrent.files = torrent.files.map((file) => ({
         ...file,
         data: this.utilsService.parseFileNameCTRL(
-          file.name.split('/')[1],
+          file.name.match(/.*\/(.*)/)[1] || file.name,
           type,
         ),
       }))

@@ -1,23 +1,24 @@
 import { Injectable } from '@nestjs/common'
 import * as Transmission from 'transmission'
-import { ConfigService } from '../config/config.service'
+import { SettingsService } from '../settings/settings.service'
 import { MediaType } from './interfaces'
-import { TransmissionConfig } from './transmission.config'
 
 @Injectable()
 export class TransmissionService {
   private transmission: Transmission
   public downloadDir: string
-  constructor(private readonly config: ConfigService<TransmissionConfig>) {
-    this.transmission = new Transmission({
-      host: config.env.TRANSMISSION_HOST,
-      port: config.env.TRANSMISSION_PORT,
-      username: config.env.TRANSMISSION_USERNAME,
-      password: config.env.TRANSMISSION_PASSWORD,
-      url: config.env.TRANSMISSION_URL,
-      ssl: config.env.TRANSMISSION_SSL,
+  constructor(private readonly settingsService: SettingsService) {
+    settingsService.getSettings().then((settings) => {
+      this.transmission = new Transmission({
+        host: settings.TRANSMISSION_HOST,
+        port: settings.TRANSMISSION_PORT,
+        username: settings.TRANSMISSION_USERNAME,
+        password: settings.TRANSMISSION_PASSWORD,
+        url: settings.TRANSMISSION_URL,
+        ssl: settings.TRANSMISSION_SSL,
+      })
+      this.downloadDir = settings.TRANSMISSION_DOWNLOADS
     })
-    this.downloadDir = config.env.TRANSMISSION_DOWNLOADS
   }
 
   processDownloadDir(type: MediaType) {
@@ -93,6 +94,6 @@ export class TransmissionService {
     return torrents.find((t) => t.hashString === hash)
   }
   transmissionDownloads() {
-    return this.config.env.TRANSMISSION_DOWNLOADS
+    return this.settingsService.getSetting('TRANSMISSION_DOWNLOADS')
   }
 }

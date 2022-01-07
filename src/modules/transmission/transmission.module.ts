@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '../config/config.module'
-import { TransmissionConfig } from './transmission.config'
+import { SettingsModule } from '../settings/settings.module'
 import { TransmissionService } from './transmission.service'
 
 @Module({
-  imports: [ConfigModule.register(TransmissionConfig)],
+  imports: [SettingsModule],
   providers: [TransmissionService],
   exports: [TransmissionService],
 })

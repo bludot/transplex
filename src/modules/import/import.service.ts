@@ -5,12 +5,11 @@ import { promisify } from 'util'
 import { Injectable } from '@nestjs/common'
 import * as Bluebird from 'bluebird'
 import { TransmissionService } from '../transmission/transmission.service'
-import { ConfigService } from '../config/config.service'
 import { DownloadsService } from '../downloads/downloads.service'
 import { UtilsService } from '../utils/utils.service'
 import { MediaType } from '../transmission/interfaces'
 import { MediaService } from '../media/media.service'
-import { ImportConfig } from './import.config'
+import { SettingsService } from '../settings/settings.service'
 
 async function* getFiles(dir) {
   const dirents = await readdir(dir, { withFileTypes: true })
@@ -27,7 +26,7 @@ async function* getFiles(dir) {
 @Injectable()
 export class ImportService {
   constructor(
-    private readonly config: ConfigService<ImportConfig>,
+    private readonly settingsService: SettingsService,
     private readonly transmissionService: TransmissionService,
     private readonly downloadService: DownloadsService,
     private readonly utilsService: UtilsService,
@@ -35,7 +34,9 @@ export class ImportService {
   ) {}
 
   async getLocalFiles(location: string): Promise<string[]> {
-    const dir = `${this.config.env.IMPORT_ROOT}/${location}`
+    const dir = `${this.settingsService.getSettingSync(
+      'IMPORT_ROOT',
+    )}/${location}`
     if (!fs.existsSync(dir)) {
       return []
     }
@@ -63,6 +64,9 @@ export class ImportService {
   }
 
   translateFileName(fileName: string, fileData: any) {
+    if (!fileData.seasons && !fileData.episodeNumbers) {
+      throw new Error('invalid file name, cannot import')
+    }
     const ext = fileName.split('.').pop()
     const season = fileData.seasons[0] || 1
     console.log(fileData)
@@ -94,21 +98,29 @@ export class ImportService {
         media.type as MediaType,
       ),
     }))
-    const transmissionDownloads = this.transmissionService.transmissionDownloads()
+    const transmissionDownloads = await this.transmissionService.transmissionDownloads()
     this.makeDirectory(
-      `${this.config.env.IMPORT_ROOT}/${this.processImportDir(
-        media.type as MediaType,
-      )}/${media.name}`,
+      `${this.settingsService.getSettingSync(
+        'IMPORT_ROOT',
+      )}/${this.processImportDir(media.type as MediaType)}/${media.name}`,
     )
     await Bluebird.map(
       files,
       async (file) => {
-        return promisify(fs.copyFile)(
-          `${transmissionDownloads}/${file.name}`,
-          `${this.config.env.IMPORT_ROOT}/${this.processImportDir(
-            media.type as MediaType,
-          )}/${media.name}/${this.translateFileName(file.name, file.data)}`,
-        )
+        try {
+          const fileName = this.translateFileName(file.name, file.data)
+          return promisify(fs.copyFile)(
+            `${transmissionDownloads}/${file.name}`,
+            `${this.settingsService.getSettingSync(
+              'IMPORT_ROOT',
+            )}/${this.processImportDir(media.type as MediaType)}/${
+              media.name
+            }/${fileName}`,
+          )
+        } catch (err) {
+          console.error(err)
+          return Promise.resolve()
+        }
       },
       { concurrency: 1 },
     )

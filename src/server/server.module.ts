@@ -13,10 +13,18 @@ import { MediaApiModule } from '../modules/media-api/media-api.module'
 import { DownloadsApiModule } from '../modules/downloads-api/downloads-api.module'
 import { EventsModule } from '../modules/events/events.module'
 import { ImportApiModule } from '../modules/import-api/import-api.module'
+import { SettingsApiModule } from '../modules/settings-api/settings-api.module'
+import { SettingsModule } from '../modules/settings/settings.module'
+import { TheTvDbApiModule } from '../modules/thetvdbapi/thetvdbapi.module'
 import { ServerConfig } from './server.config'
 
 @Module({
-  imports: [HealthcheckModule, TypeormConnectorModule, ManticoreModule],
+  imports: [
+    HealthcheckModule,
+    TypeormConnectorModule,
+    ManticoreModule,
+    SettingsModule,
+  ],
 })
 export class ServerModule {
   static forRoot(config: ConfigService<ServerConfig>): DynamicModule {
@@ -34,6 +42,8 @@ export class ServerModule {
         DownloadsApiModule,
         EventsModule,
         ImportApiModule,
+        SettingsApiModule,
+        TheTvDbApiModule,
       ],
     }
   }

@@ -23,7 +23,30 @@ export class UtilsService {
     }
   }
   parseFileNameCTRL(fileName: string, mediaType: MediaType): any {
-    return filenameParse(fileName, this.parseAsSeason(mediaType))
+    try {
+      const parsedData = filenameParse(
+        fileName,
+        this.parseAsSeason(mediaType),
+      ) as any
+      if (
+        !parsedData.seasons &&
+        !parsedData.episodeNumber &&
+        parsedData.title === ''
+      ) {
+        return filenameParse(fileName, !this.parseAsSeason(mediaType)) as any
+      }
+      return {
+        ...parsedData,
+        episode: parsedData.episodeNumbers
+          ? parsedData.episodeNumbers[0]
+          : null,
+        season: parsedData.seasons ? parsedData.seasons[0] : null,
+      }
+    } catch (e) {
+      return {
+        title: fileName.split('.')[0],
+      }
+    }
   }
   parseFileName(fileName: string): any {
     const regexes = [
@@ -90,5 +113,13 @@ export class UtilsService {
       i++
     }
     return data
+  }
+  interpolate(str: string, params: any) {
+    const names = Object.keys(params)
+    const vals = Object.values(params)
+    return new Function(...names, `return \`${str}\`;`)(...vals)
+  }
+  convertEnum<T>(type: any, t: any): T {
+    return t[Object.keys(t).find((key) => t[key] === type)]
   }
 }

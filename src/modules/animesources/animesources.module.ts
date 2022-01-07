@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '../config/config.module'
-import { AnimeSourcesConfig } from './animesources.config'
+import { SettingsModule } from '../settings/settings.module'
 import { AnimesourcesService } from './animesources.service'
 
 @Module({
-  imports: [ConfigModule.register(AnimeSourcesConfig)],
+  imports: [SettingsModule],
   providers: [AnimesourcesService],
   exports: [AnimesourcesService],
 })

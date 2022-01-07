@@ -92,6 +92,16 @@ services:
       - '/Users/jamestrotter/Documents/TransplexFiles/movies:/movies'
       - '/Users/jamestrotter/Documents/TransplexFiles/anime:/anime'
     restart: unless-stopped
+  redis:
+    image: redis:5.0.5
+    ports:
+      - '6379:6379'
+    restart: unless-stopped
+    volumes:
+      - './redis.conf:/etc/redis/redis.conf'
+      - redis_data:/data
+    networks:
+      - transplex-api-network
 
 networks:
   transplex-api-network:
@@ -99,3 +109,4 @@ volumes:
   transplex-api_deps:
   transplex-api_db:
   manticore_db:
+  redis_data:
