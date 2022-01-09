@@ -34,7 +34,6 @@ export class EventsService {
     await Bluebird.map(
       downloadAndTorrent,
       async (data) => {
-        console.log(data)
         const torrentStatus = this.transmissionService.getStatusType(
           data.torrent.status,
         )

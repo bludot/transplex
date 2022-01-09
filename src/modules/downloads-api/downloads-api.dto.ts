@@ -17,4 +17,8 @@ export class AddDownloadDto {
   @ApiProperty()
   @IsNumber()
   item: number
+
+  @ApiProperty()
+  @IsString()
+  url: string
 }

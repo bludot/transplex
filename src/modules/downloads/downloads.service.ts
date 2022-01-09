@@ -18,7 +18,6 @@ export class DownloadsService {
       download.magnetlink,
       mediaType,
     )
-    console.log(res)
     this.repo.upsert(download)
   }
 
