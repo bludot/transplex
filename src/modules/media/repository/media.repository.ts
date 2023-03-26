@@ -17,7 +17,7 @@ export class MediaRepository extends Repository<Media> {
           type: mediaItem.type,
           anime: mediaItem.anime,
           watch: mediaItem.watch,
-          anidbId: mediaItem.anidbId,
+          thetvdbid: mediaItem.thetvdbid,
           updatedAt: mediaItem.updatedAt,
         }
       : null
@@ -35,7 +35,7 @@ export class MediaRepository extends Repository<Media> {
           type: mediaItem.type,
           anime: mediaItem.anime,
           watch: mediaItem.watch,
-          anidbId: mediaItem.anidbId,
+          thetvdbid: mediaItem.thetvdbid,
           updatedAt: mediaItem.updatedAt,
         }
       : null
@@ -49,7 +49,7 @@ export class MediaRepository extends Repository<Media> {
       type: mediaItem.type,
       anime: mediaItem.anime,
       watch: mediaItem.watch,
-      anidbId: mediaItem.anidbId,
+      thetvdbid: mediaItem.thetvdbid,
       updatedAt: mediaItem.updatedAt,
     }))
   }
@@ -74,7 +74,7 @@ export class MediaRepository extends Repository<Media> {
         type: mediaItem.type,
         anime: mediaItem.anime,
         watch: mediaItem.watch,
-        anidbId: mediaItem.anidbId,
+        thetvdbid: mediaItem.thetvdbid,
         updatedAt: mediaItem.updatedAt,
       }
     }
@@ -92,7 +92,7 @@ export class MediaRepository extends Repository<Media> {
       type: saved.type,
       anime: saved.anime,
       watch: saved.watch,
-      anidbId: saved.anidbId,
+      thetvdbid: saved.thetvdbid,
       updatedAt: saved.updatedAt,
     }
   }

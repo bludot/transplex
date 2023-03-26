@@ -16,7 +16,7 @@ export class MediaService {
       type: media.type,
       anime: media.anime,
       watch: media.watch,
-      anidbId: media.anidbId,
+      thetvdbid: media.thetvdbid,
     })
   }
 

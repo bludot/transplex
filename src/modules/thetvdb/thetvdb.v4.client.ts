@@ -30,21 +30,48 @@ class TheTvDbClient {
     console.log(tvdbid)
     return this.client.get(`/seasons/${tvdbid}`)
   }
-  async getMetadata(tvdbid: string, type: string) {
+  async getMetadata(tvdbid: string, type?: string) {
+    if (!type) {
+      try {
+        const [main, extened] = await Promise.all([
+          this.client.get(`/series/${tvdbid}/episodes/default/eng`),
+          this.client.get(`/series/${tvdbid}/extended`),
+        ])
+        main.data.data.artworks = extened.data.data.artworks
+        return main
+      } catch (e) {
+        try {
+          return this.client.get(`/movies/${tvdbid}/extended`)
+        } catch (e) {
+          return {}
+        }
+      }
+    }
     if (type === 'series') {
+      console.log('HERE!')
       const [main, extened] = await Promise.all([
-        this.client.get(`/${type}/${tvdbid}/episodes/default/eng`),
-        this.client.get(`/${type}/${tvdbid}/extended`),
+        this.client.get(
+          `/${type.toLowerCase()}/${tvdbid}/episodes/default/eng`,
+        ),
+        this.client.get(`/${type.toLowerCase()}/${tvdbid}/extended`),
       ])
       main.data.data.artworks = extened.data.data.artworks
       return main
     } else {
-      return this.client.get(`/${type}/${tvdbid}/extended`)
+      return this.client.get(`/${type.toLowerCase()}/${tvdbid}/extended`)
     }
   }
-  async searchMetadata(query: string, type: string) {
+  async searchMetadata(query: string, type?: string) {
+    if (!type) {
+      return this.client.get(`/search?q=${encodeURIComponent(query)}`)
+    }
     return this.client.get(
       `/search?q=${encodeURIComponent(query)}&type=${type}`,
+    )
+  }
+  async searchAny(query: string) {
+    return this.client.get(
+      `/search?q=${encodeURIComponent(query)}&language=eng`,
     )
   }
 }

@@ -10,10 +10,10 @@ services:
       - postgres
       - manticore
     volumes:
-      - '/Users/jamestrotter/Documents/TransplexFiles/:/usr/src/local/'
+      - '/Users/james/Documents/TransplexFiles/:/usr/src/local/'
       - '.:/usr/src/app'
       - 'transplex-api_deps:/usr/src/app/node_modules'
-      - '/Users/jamestrotter/Documents/TransmissionDownloads:/downloads'
+      - '/Users/james/Documents/TransmissionDownloads:/downloads'
     ports:
       - '1337:3000'
     networks:
@@ -30,27 +30,6 @@ services:
       - '.db_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql'
     networks:
       - transplex-api-network
-  manticore:
-    hostname: manticore
-    image: manticoresearch/manticore
-    ports:
-      - '9306:9306'
-      - '9308:9308'
-      - '9312:9312'
-    restart: always
-    ulimits:
-      nproc: 65535
-      nofile:
-         soft: 65535
-         hard: 65535
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - manticore_db:/var/lib/manticore
-#      - ./manticore.conf:/etc/manticoresearch/manticore.conf # uncomment if you use a custom config
-    networks:
-      - transplex-api-network
   transmission:
     image: lscr.io/linuxserver/transmission
     container_name: transmission
@@ -65,7 +44,7 @@ services:
       #- HOST_WHITELIST=dnsnane list #optional
     volumes:
       - './transmission:/config'
-      - '/Users/jamestrotter/Documents/TransmissionDownloads:/downloads'
+      - '/Users/james/Documents/TransmissionDownloads:/downloads'
       - './watch:/watch'
     ports:
       - 9091:9091
@@ -87,10 +66,10 @@ services:
       #- PLEX_CLAIM= #optional
     volumes:
       - './plex-scripts:/plex-scripts'
-      - '/Users/jamestrotter/Documents/TransplexFiles/library:/config'
-      - '/Users/jamestrotter/Documents/TransplexFiles/tvseries:/tv'
-      - '/Users/jamestrotter/Documents/TransplexFiles/movies:/movies'
-      - '/Users/jamestrotter/Documents/TransplexFiles/anime:/anime'
+      - '/Users/james/Documents/TransplexFiles/library:/config'
+      - '/Users/james/Documents/TransplexFiles/tvseries:/tv'
+      - '/Users/james/Documents/TransplexFiles/movies:/movies'
+      - '/Users/james/Documents/TransplexFiles/anime:/anime'
     restart: unless-stopped
   redis:
     image: redis:5.0.5
@@ -108,5 +87,4 @@ networks:
 volumes:
   transplex-api_deps:
   transplex-api_db:
-  manticore_db:
   redis_data:

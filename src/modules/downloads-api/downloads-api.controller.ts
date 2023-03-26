@@ -24,8 +24,8 @@ export class DownloadsApiController {
   @Post('/add')
   async addDownload(@Body() body: AddDownloadDto): Promise<any> {
     const media: IMedia = await this.mediaService.getMediaByName(body.mediaName)
-    const metadata = await this.animeMetadataService.getAnidbMetadata(
-      media.anidbId,
+    const metadata = await this.animeMetadataService.getMetadata(
+      media.thetvdbid,
     )
     const torrentInfo = await this.torrenParserService.parseRemoteTorrent(
       body.url,
@@ -40,7 +40,7 @@ export class DownloadsApiController {
         ),
       }
     })
-    const episodes = metadata.theTvDb.data.episodes
+    const episodes = metadata.data.episodes
     await this.fileManagerService.autoCreateMap(
       files,
       episodes,
