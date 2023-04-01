@@ -8,12 +8,12 @@ services:
     env_file: .env
     depends_on:
       - postgres
-      - manticore
+#      - manticore
     volumes:
-      - '/Users/james/Documents/TransplexFiles/:/usr/src/local/'
+      - '$HOME/Documents/TransplexFiles/:/usr/src/local/'
       - '.:/usr/src/app'
       - 'transplex-api_deps:/usr/src/app/node_modules'
-      - '/Users/james/Documents/TransmissionDownloads:/downloads'
+      - '$HOME/Documents/TransmissionDownloads:/downloads'
     ports:
       - '1337:3000'
     networks:
@@ -37,14 +37,14 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
-      - TRANSMISSION_WEB_HOME=/combustion-release/ #optional
+      #- TRANSMISSION_WEB_HOME=/combustion-release/ #optional
       - USER=transmission #optional
       - PASS=password #optional
       #- WHITELIST=iplist #optional
       #- HOST_WHITELIST=dnsnane list #optional
     volumes:
       - './transmission:/config'
-      - '/Users/james/Documents/TransmissionDownloads:/downloads'
+      - '$HOME/Documents/TransmissionDownloads:/downloads'
       - './watch:/watch'
     ports:
       - 9091:9091
@@ -66,10 +66,10 @@ services:
       #- PLEX_CLAIM= #optional
     volumes:
       - './plex-scripts:/plex-scripts'
-      - '/Users/james/Documents/TransplexFiles/library:/config'
-      - '/Users/james/Documents/TransplexFiles/tvseries:/tv'
-      - '/Users/james/Documents/TransplexFiles/movies:/movies'
-      - '/Users/james/Documents/TransplexFiles/anime:/anime'
+      - '$HOME/Documents/TransplexFiles/library:/config'
+      - '$HOME/Documents/TransplexFiles/tvseries:/tv'
+      - '$HOME/Documents/TransplexFiles/movies:/movies'
+      - '$HOME/Documents/TransplexFiles/anime:/anime'
     restart: unless-stopped
   redis:
     image: redis:5.0.5

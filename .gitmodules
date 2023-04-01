@@ -1,0 +1,3 @@
+[submodule "video-filename-parser"]
+	path = video-filename-parser
+	url = https://github.com/scttcper/video-filename-parser

@@ -229,6 +229,7 @@ export class TheTvDbService {
     const {
       data: { data },
     } = await this.v4client.searchAny(query)
+    console.log(data)
     return data.map((item: any) => ({
       ...item,
       anidbid: this.getAnidbid(item.id?.replace(/[^0-9.]/gm, '')),
