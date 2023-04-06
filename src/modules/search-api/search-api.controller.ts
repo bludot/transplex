@@ -1,23 +1,16 @@
-import { Controller, Get, Inject, Injectable, Query } from '@nestjs/common'
-import { ManticoreService } from '../manticore/manticore.service'
+import { Controller, Get, Injectable, Query } from '@nestjs/common'
+import { TheTvDbService } from '../thetvdb/thetvdb.service'
 import { SearchDto } from './search-api.dto'
 
 @Injectable()
 @Controller('/search')
 export class SearchApiController {
-  constructor(
-    @Inject('MANTICORE')
-    private readonly manticoreService: ManticoreService,
-  ) {}
+  constructor(private readonly theTVDBService: TheTvDbService) {}
+
   @Get('/')
-  async search(@Query() query: SearchDto): Promise<any> {
-    const data = await this.manticoreService.searchSynonyms(query.query)
-    return {
-      ...data,
-      hits: {
-        ...data.hits,
-        hits: data.hits.hits.slice(0, 30),
-      },
-    }
+  async searchTheTVDB(@Query() query: SearchDto): Promise<any> {
+    const data = await this.theTVDBService.search(query.query)
+    const parsedData = JSON.parse(JSON.stringify(data))
+    return parsedData
   }
 }

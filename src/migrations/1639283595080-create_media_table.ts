@@ -30,7 +30,7 @@ export class createMediaTable1639283595080 implements MigrationInterface {
             type: 'boolean',
           },
           {
-            name: 'anidb_id',
+            name: 'thetvdbid',
             type: 'varchar',
           },
           {

@@ -34,7 +34,6 @@ export class WatchlistService {
     items: number,
     type: MediaType,
   ) {
-    console.log(name, query, user, items, type)
     const watchitem = await this.upsert({
       indexData: {
         name,
@@ -99,7 +98,6 @@ export class WatchlistService {
           updatedAt: new Date(),
         })
       }
-      console.log(mergedTorrentAndSearch.length, items)
       if (mergedTorrentAndSearch.length > 0) {
         Promise.all(
           mergedTorrentAndSearch.map((item) => {

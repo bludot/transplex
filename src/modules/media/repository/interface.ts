@@ -4,6 +4,6 @@ export interface IMedia {
   readonly type: string
   readonly anime: boolean
   readonly watch: boolean
-  readonly anidbId: string
+  readonly thetvdbid: string
   readonly updatedAt: Date
 }

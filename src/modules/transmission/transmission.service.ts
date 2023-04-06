@@ -44,7 +44,6 @@ export class TransmissionService {
     return new Promise((resolve, reject) => {
       this.transmission.addUrl(magnet, options, (err, ...args) => {
         if (err) return reject(err)
-        console.log(args)
         resolve(args)
       })
     })

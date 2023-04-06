@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common'
-import { ManticoreModule } from '../manticore/manticore.module'
+import { TheTvDbModule } from '../thetvdb/thetvdb.module'
 import { SearchApiController } from './search-api.controller'
 
 @Module({
-  imports: [ManticoreModule],
+  imports: [TheTvDbModule],
   controllers: [SearchApiController],
 })
 export class SearchApiModule {}

@@ -15,7 +15,6 @@ class TheTvDbClient {
       })
       .then((data) => {
         this.authToken = data.data.data.token
-        console.log(data.data)
         this.client = axios.create({
           baseURL: 'https://api4.thetvdb.com/v4',
           headers: {
@@ -27,24 +26,53 @@ class TheTvDbClient {
       })
   }
   getSeasons(tvdbid: string) {
-    console.log(tvdbid)
     return this.client.get(`/seasons/${tvdbid}`)
   }
-  async getMetadata(tvdbid: string, type: string) {
+  async getMetadata(tvdbid: string, type?: string) {
+    if (!type) {
+      try {
+        const [main, extened, translationseng] = await Promise.all([
+          this.client.get(`/series/${tvdbid}/episodes/default/eng`),
+          this.client.get(`/series/${tvdbid}/extended`),
+          this.client.get(`/series/${tvdbid}/translations/eng`),
+        ])
+        main.data.data.artworks = extened.data.data.artworks
+        main.data.translations = translationseng.data
+        return main
+      } catch (e) {
+        try {
+          return this.client.get(`/movies/${tvdbid}/extended`)
+        } catch (e) {
+          return {}
+        }
+      }
+    }
     if (type === 'series') {
-      const [main, extened] = await Promise.all([
-        this.client.get(`/${type}/${tvdbid}/episodes/default/eng`),
-        this.client.get(`/${type}/${tvdbid}/extended`),
+      const [main, extened, translationseng] = await Promise.all([
+        this.client.get(
+          `/${type.toLowerCase()}/${tvdbid}/episodes/default/eng`,
+        ),
+        this.client.get(`/${type.toLowerCase()}/${tvdbid}/extended`),
+        this.client.get(`/${type.toLowerCase()}/${tvdbid}/translations/eng`),
       ])
       main.data.data.artworks = extened.data.data.artworks
+      main.data.data.translations = translationseng.data.data
       return main
     } else {
-      return this.client.get(`/${type}/${tvdbid}/extended`)
+      return this.client.get(`/${type.toLowerCase()}/${tvdbid}/extended`)
     }
   }
-  async searchMetadata(query: string, type: string) {
+  async searchMetadata(query: string, type?: string) {
+    if (!type) {
+      return this.client.get(`/search?q=${encodeURIComponent(query)}`)
+    }
     return this.client.get(
       `/search?q=${encodeURIComponent(query)}&type=${type}`,
+    )
+  }
+  async searchAny(query: string) {
+    return this.client.get(
+      `/search?q=${encodeURIComponent(query)}&language=eng`,
     )
   }
 }

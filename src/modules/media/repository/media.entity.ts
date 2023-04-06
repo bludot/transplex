@@ -25,8 +25,8 @@ export class Media {
   @Column()
   watch: boolean
 
-  @Column({ name: 'anidb_id' })
-  anidbId: string
+  @Column({ name: 'thetvdbid' })
+  thetvdbid: string
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date

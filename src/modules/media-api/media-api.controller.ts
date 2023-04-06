@@ -20,17 +20,31 @@ export class MediaApiController {
 
   @Put('/')
   async addMedia(@Body() media: Media) {
-    console.log(media)
     return this.mediaService.addMedia({
       name: media.name,
       type: media.type,
       anime: media.anime,
       watch: media.watch,
-      anidbId: media.anidbId,
+      thetvdbid: media.thetvdbid,
     })
   }
 
-  @Get('/:name')
+  @Get('/thetvdbid/:thetvdbid')
+  async getMediaByTheTvDbId(@Param('thetvdbid') thetvdbid: number) {
+    const media = await this.mediaService.getMediaByTheTvDbId(thetvdbid)
+    return {
+      ...media,
+      files: await this.importService.getLocalFiles(media.name),
+      status: await this.downloadService.downloadStatusByMediaId(
+        media.id,
+        media.type as MediaType,
+      ),
+    }
+  }
+
+
+
+  @Get('/name/:name')
   async getMedia(@Param('name') name: string) {
     const media = await this.mediaService.getMediaByName(
       decodeURIComponent(name),

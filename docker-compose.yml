@@ -5,17 +5,20 @@ services:
       context: .
       dockerfile: 'Dockerfile.local'
     command: "/bin/bash -c 'yarn && yarn build &&  ENV=local yarn typeorm migration:run && yarn start:dev'"
+    #command: "/bin/bash -c 'yarn && yarn build &&  ENV=local yarn typeorm migration:run && yarn debug'"
     env_file: .env
     depends_on:
       - postgres
-      - manticore
+#      - manticore
+    tty: true
     volumes:
-      - '/Users/jamestrotter/Documents/TransplexFiles/:/usr/src/local/'
+      - '$HOME/Documents/TransplexFiles/:/usr/src/local/'
       - '.:/usr/src/app'
       - 'transplex-api_deps:/usr/src/app/node_modules'
-      - '/Users/jamestrotter/Documents/TransmissionDownloads:/downloads'
+      - '$HOME/Documents/TransmissionDownloads:/downloads'
     ports:
-      - '1337:3000'
+      - '1337:1337'
+      - '9229:9229'
     networks:
       - transplex-api-network
   postgres:
@@ -30,27 +33,6 @@ services:
       - '.db_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql'
     networks:
       - transplex-api-network
-  manticore:
-    hostname: manticore
-    image: manticoresearch/manticore
-    ports:
-      - '9306:9306'
-      - '9308:9308'
-      - '9312:9312'
-    restart: always
-    ulimits:
-      nproc: 65535
-      nofile:
-         soft: 65535
-         hard: 65535
-      memlock:
-        soft: -1
-        hard: -1
-    volumes:
-      - manticore_db:/var/lib/manticore
-#      - ./manticore.conf:/etc/manticoresearch/manticore.conf # uncomment if you use a custom config
-    networks:
-      - transplex-api-network
   transmission:
     image: lscr.io/linuxserver/transmission
     container_name: transmission
@@ -58,14 +40,14 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
-      - TRANSMISSION_WEB_HOME=/combustion-release/ #optional
+      #- TRANSMISSION_WEB_HOME=/combustion-release/ #optional
       - USER=transmission #optional
       - PASS=password #optional
       #- WHITELIST=iplist #optional
       #- HOST_WHITELIST=dnsnane list #optional
     volumes:
       - './transmission:/config'
-      - '/Users/jamestrotter/Documents/TransmissionDownloads:/downloads'
+      - '$HOME/Documents/TransmissionDownloads:/downloads'
       - './watch:/watch'
     ports:
       - 9091:9091
@@ -87,10 +69,10 @@ services:
       #- PLEX_CLAIM= #optional
     volumes:
       - './plex-scripts:/plex-scripts'
-      - '/Users/jamestrotter/Documents/TransplexFiles/library:/config'
-      - '/Users/jamestrotter/Documents/TransplexFiles/tvseries:/tv'
-      - '/Users/jamestrotter/Documents/TransplexFiles/movies:/movies'
-      - '/Users/jamestrotter/Documents/TransplexFiles/anime:/anime'
+      - '$HOME/Documents/TransplexFiles/library:/config'
+      - '$HOME/Documents/TransplexFiles/tvseries:/tv'
+      - '$HOME/Documents/TransplexFiles/movies:/movies'
+      - '$HOME/Documents/TransplexFiles/anime:/anime'
     restart: unless-stopped
   redis:
     image: redis:5.0.5
@@ -108,5 +90,4 @@ networks:
 volumes:
   transplex-api_deps:
   transplex-api_db:
-  manticore_db:
   redis_data:

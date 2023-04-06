@@ -20,5 +20,5 @@ export class Media {
 
   @ApiProperty()
   @IsNumberString()
-  anidbId: string
+  thetvdbid: string
 }

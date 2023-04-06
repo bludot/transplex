@@ -19,6 +19,7 @@ function bufferToStream(buffer: Buffer): Stream {
 export class TheTvDbService {
   private anidbidToTvdbidMapping: any[]
   private readonly v4client: TheTvDbClient
+
   constructor(
     private readonly cacheService: CacheService,
     private readonly config: ConfigService<TheTvDbConfig>,
@@ -41,6 +42,7 @@ export class TheTvDbService {
         this.patch()
       })
   }
+
   patch() {
     const patches = [
       { anidbid: 8832, tvdbid: 1606 },
@@ -52,6 +54,7 @@ export class TheTvDbService {
       }).tvdbid = patch.tvdbid
     })
   }
+
   type(type: MediaType) {
     switch (type) {
       case MediaType.ANIME_SHOW:
@@ -66,29 +69,40 @@ export class TheTvDbService {
         return 'series'
     }
   }
+
   getTvdbId(anidbid: string) {
     const res = this.anidbidToTvdbidMapping.find((anime) => {
       return anime.anidbid.toString() === anidbid.toString()
     })
     return res ? res.tvdbid : null
   }
-  async getMetadata(anidbid: string, mediaType: MediaType) {
-    const type = this.type(mediaType)
-    const tvdbid = this.getTvdbId(anidbid)
-    const cache = await this.cacheService.get(`metadata_${anidbid}`)
+
+  getAnidbid(thetvdbid: string) {
+    const res = this.anidbidToTvdbidMapping.find((anime) => {
+      return anime.tvdbid.toString() === thetvdbid.toString()
+    })
+    return res ? res.tvdbid : null
+  }
+
+  async getMetadata(thetvdbid: string, type?: MediaType) {
+    const cache = await this.cacheService.get(`metadata_${thetvdbid}`)
 
     if (!cache) {
-      const { data } = await this.v4client.getMetadata(tvdbid, type)
-      await this.cacheService.set(`metadata_${tvdbid}`, JSON.stringify(data))
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const { data } = await this.v4client.getMetadata(thetvdbid, type)
+      await this.cacheService.set(`metadata_${thetvdbid}`, JSON.stringify(data))
       return data
     }
     return JSON.parse(cache)
   }
+
   async getMetadataByTvDbId(tvdbid: string, mediaType: MediaType) {
-    console.log('RUNNING THIS')
     const type = this.type(mediaType)
     const cache = await this.cacheService.get(`metadata_${tvdbid}`)
     if (!cache) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const { data } = await this.v4client.getMetadata(tvdbid, type)
       await this.cacheService.set(`metadata_${tvdbid}`, JSON.stringify(data))
       return data
@@ -96,8 +110,27 @@ export class TheTvDbService {
     return JSON.parse(cache)
   }
 
-  async getPoster(anidbid: string, mediaType: MediaType) {
-    const metadata = await this.getMetadata(anidbid, mediaType)
+  async getPosterByTheTVDBID(tvdbid: string, type: MediaType) {
+    const metadata = await this.getMetadata(tvdbid, type)
+
+    const image = metadata.data.image || metadata.data.artworks[0].image
+    const cache = await this.cacheService.get(image)
+
+    if (!cache) {
+      const data = await axios.get(image, {
+        responseType: 'arraybuffer',
+      })
+
+      const buffer = new Buffer(data.data)
+      await this.cacheService.set(image, buffer.toString('base64'))
+      return bufferToStream(buffer)
+    }
+    const buffer = new Buffer(cache, 'base64')
+    return bufferToStream(buffer)
+  }
+
+  async getPoster(anidbid: string) {
+    const metadata = await this.getMetadata(anidbid)
 
     const image = metadata.data.image
     const cache = await this.cacheService.get(image)
@@ -114,6 +147,7 @@ export class TheTvDbService {
     const buffer = new Buffer(cache, 'base64')
     return bufferToStream(buffer)
   }
+
   async getMovieFanart(metadata: any) {
     const image = metadata.data.artworks.find((artwork) => artwork.type === 15)
       .image
@@ -132,11 +166,14 @@ export class TheTvDbService {
     const buffer = new Buffer(cache, 'base64')
     return bufferToStream(buffer)
   }
-  async getFanart(anidbid: string, mediaType: MediaType) {
-    const type = this.type(mediaType)
-    const metadata = await this.getMetadata(anidbid, mediaType)
-    if (type === 'movies') {
-      return this.getMovieFanart(metadata)
+
+  async getFanart(thetvdbid: string, type: string) {
+    let metadata
+    try {
+      metadata = await this.getMetadata(thetvdbid)
+    } catch (e) {
+      console.log('ERROR', e)
+      metadata = await this.getMovieFanart(metadata)
     }
     const image = metadata.data.artworks.find((artwork) => artwork.type === 3)
       .image
@@ -154,16 +191,23 @@ export class TheTvDbService {
     const buffer = new Buffer(cache, 'base64')
     return bufferToStream(buffer)
   }
+
   async getSeasons(anidbid: string) {
     const tvdbid = this.getTvdbId(anidbid)
     return this.v4client.getSeasons(tvdbid)
   }
-  async searchMetadata(anidbid: string, query: string, mediaType: MediaType) {
+
+  async searchMetadata(
+    thetvdbid: string,
+    query?: string,
+    mediaType?: MediaType,
+  ) {
     const type = this.type(mediaType).slice(0, -1)
     const cache = await this.cacheService.get(`search_${query}_${type}`)
 
     if (!cache) {
       const { data } = await this.v4client.searchMetadata(query, type)
+
       await this.cacheService.set(
         `search_${query}_${type}`,
         JSON.stringify(data),
@@ -171,16 +215,21 @@ export class TheTvDbService {
       const item = data.data.find((item) => {
         return item.genres.includes('Animation')
       })
-      this.anidbidToTvdbidMapping.find((anime) => {
-        return anime.anidbid.toString() === anidbid.toString()
-      }).tvdbid = data.data[0].tvdb_id
-      return this.getMetadataByTvDbId(item.tvdb_id, mediaType)
+      return this.getMetadataByTvDbId(thetvdbid, mediaType)
     }
 
     const cacheData = JSON.parse(cache)
-    const item = cacheData.data.find((item) => {
-      return item.genres.includes('Animation')
-    })
-    return this.getMetadataByTvDbId(item.tvdb_id, mediaType)
+    return this.getMetadataByTvDbId(thetvdbid, mediaType)
+  }
+
+  async search(query: string) {
+    const {
+      data: { data },
+    } = await this.v4client.searchAny(query)
+    return data.map((item: any) => ({
+      ...item,
+      name: item.translations.eng,
+      anidbid: this.getAnidbid(item.id?.replace(/[^0-9.]/gm, '')),
+    }))
   }
 }

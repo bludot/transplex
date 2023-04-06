@@ -5,19 +5,31 @@ import { AnimeMetaDataService } from '../animemetadata/animemetadata.service'
 export class MetadataApiController {
   constructor(private readonly animeMetadataService: AnimeMetaDataService) {}
 
-  @Get('/anime/:id')
-  getAnimeMetadata(@Param('id') id: string) {
-    return this.animeMetadataService.getAnidbMetadata(id)
+  @Get('/anime/:type/:id')
+  getAnimeMetadata(@Param('id') id: string, @Param('type') type: string) {
+    return this.animeMetadataService.getMetadata(id, type)
   }
-  @Get('/anime/:id/poster')
-  async getAnimePoster(@Param('id') id: string, @Res() response) {
-    const data = await this.animeMetadataService.getAnimePoster(id)
+
+  @Get('/anime/:type/:id/poster')
+  async getAnimePosterFromTheTvDb(
+    @Param('id') id: string,
+    @Param('type') type: string,
+    @Res() response,
+  ) {
+    const data = await this.animeMetadataService.getAnimePosterByTheTVDBID(
+      id,
+      type,
+    )
     data.pipe(response)
   }
 
-  @Get('/anime/:id/fanart')
-  async getAnimeFanart(@Param('id') id: string, @Res() response) {
-    const data = await this.animeMetadataService.getAnimeFanart(id)
+  @Get('/anime/:type/:id/fanart')
+  async getAnimeFanart(
+    @Param('id') id: string,
+    @Param('type') type: string,
+    @Res() response,
+  ) {
+    const data = await this.animeMetadataService.getAnimeFanart(id, type)
     return data.pipe(response)
   }
 }
