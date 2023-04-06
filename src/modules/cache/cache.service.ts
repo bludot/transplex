@@ -5,9 +5,10 @@ import type {} from 'redis'
 @Injectable()
 export class CacheService {
   private readonly client: RedisClientType<any>
+
   constructor() {
     this.client = createClient({
-      url: 'redis://redis:6379',
+      url: 'redis://localhost:6379',
     })
     ;(async () => {
       this.client.on('error', (err) => console.log('Redis Client Error', err))

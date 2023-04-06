@@ -21,9 +21,7 @@ export class NyaapiService {
     },
     n?: number,
   ) {
-    console.log(this.si)
-    console.log('got here')
-    console.log(query, opts, n || 20)
+
     return this.si
       .search(query, n, { ...opts, sort: 'seeders', direction: 'desc' })
       .then((res) => {
@@ -88,7 +86,6 @@ export class NyaapiService {
       sort: 'seeders',
       direction: 'desc',
     })
-    console.log(result)
     return result.map((item) => ({
       ...item,
       episode:

@@ -43,6 +43,22 @@ export class FileMapRepository extends Repository<FileMap> {
       : null
   }
 
+  async findByMediaId(mediaId: string): Promise<IFileMap[]> {
+    const filemapItems: FileMap[] = await this.find({
+      where: { mediaId },
+    })
+    return filemapItems.map((filemapItem) => ({
+      id: filemapItem.id,
+      mediaId: filemapItem.mediaId,
+      fileName: filemapItem.fileName,
+      episodeName: filemapItem.episodeName,
+      episodeNumber: filemapItem.episodeNumber,
+      seasonNumber: filemapItem.seasonNumber,
+      mediaType: filemapItem.mediaType,
+      updatedAt: filemapItem.updatedAt,
+    }))
+  }
+
   public async findAll(): Promise<IFileMap[]> {
     const filemapItems: FileMap[] = await this.find()
     return filemapItems.map((filemapItem) => ({

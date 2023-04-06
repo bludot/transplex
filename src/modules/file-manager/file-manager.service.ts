@@ -3,6 +3,7 @@ import * as Bluebird from 'bluebird'
 import { MediaType } from '../transmission/interfaces'
 import { FileMapperService } from './file-mapper.service'
 import { FileMapRepository } from './repository/file-map.repository'
+import { FileMap } from './repository/file-map.entity'
 
 @Injectable()
 export class FileManagerService {
@@ -20,16 +21,16 @@ export class FileManagerService {
       files,
       episodes,
     )
-    console.log(
-      mappedFiles.map((file) => ({
-        mediaId,
-        fileName: file.fileName.match(/.*\/(.*)/)[1] || file.fileName,
-        episodeName: file.name,
-        episodeNumber: file.episode || '0',
-        seasonNumber: file.season || '0',
-        mediaType,
-      })),
-    )
+    // console.log(
+    //   mappedFiles.map((file) => ({
+    //     mediaId,
+    //     fileName: file.fileName.match(/.*\/(.*)/)[1] || file.fileName,
+    //     episodeName: file.name,
+    //     episodeNumber: file.episode || '0',
+    //     seasonNumber: file.season || '0',
+    //     mediaType,
+    //   })),
+    // )
     await Bluebird.map(
       mappedFiles,
       async (file) => {
@@ -44,5 +45,13 @@ export class FileManagerService {
       },
       { concurrency: 1 },
     )
+  }
+
+  getMappedFiles(mediaId: string) {
+    return this.repo.findByMediaId(mediaId)
+  }
+
+  addFileMapping(fileMap: Partial<FileMap>) {
+    return this.repo.upsert(fileMap)
   }
 }

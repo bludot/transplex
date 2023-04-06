@@ -98,14 +98,11 @@ export class UtilsService {
           [curr]: groups[regexObj[curr]],
         }
       }, {})
-      console.log(data)
       return data
     }
     let i = 0
     let data = null
-    console.log(fileName)
     while (i < regexes.length && !data) {
-      console.log(i)
       data = runRegex(fileName, regexes[i]) || []
       if (data) {
         return data

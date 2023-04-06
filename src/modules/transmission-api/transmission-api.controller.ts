@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common'
+import {Body, Controller, Get, Param, Post} from '@nestjs/common'
 import { TransmissionService } from '../transmission/transmission.service'
 import { MagnetDTO } from './transmission-api.dto'
 
@@ -14,6 +14,11 @@ export class TransmissionController {
   @Get('/torrents')
   getTorrents(): Promise<any> {
     return this.transmissionService.getTorrents()
+  }
+
+  @Get('/torrents/:hash')
+  getTorrent(@Param('hash') hash: string): Promise<any> {
+    return this.transmissionService.getTorrentByHash(hash)
   }
 
   @Get('/torrents/active')

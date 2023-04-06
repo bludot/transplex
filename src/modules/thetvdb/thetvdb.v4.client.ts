@@ -15,7 +15,6 @@ class TheTvDbClient {
       })
       .then((data) => {
         this.authToken = data.data.data.token
-        console.log(data.data)
         this.client = axios.create({
           baseURL: 'https://api4.thetvdb.com/v4',
           headers: {
@@ -27,17 +26,18 @@ class TheTvDbClient {
       })
   }
   getSeasons(tvdbid: string) {
-    console.log(tvdbid)
     return this.client.get(`/seasons/${tvdbid}`)
   }
   async getMetadata(tvdbid: string, type?: string) {
     if (!type) {
       try {
-        const [main, extened] = await Promise.all([
+        const [main, extened, translationseng] = await Promise.all([
           this.client.get(`/series/${tvdbid}/episodes/default/eng`),
           this.client.get(`/series/${tvdbid}/extended`),
+          this.client.get(`/series/${tvdbid}/translations/eng`),
         ])
         main.data.data.artworks = extened.data.data.artworks
+        main.data.translations = translationseng.data
         return main
       } catch (e) {
         try {
@@ -48,14 +48,15 @@ class TheTvDbClient {
       }
     }
     if (type === 'series') {
-      console.log('HERE!')
-      const [main, extened] = await Promise.all([
+      const [main, extened, translationseng] = await Promise.all([
         this.client.get(
           `/${type.toLowerCase()}/${tvdbid}/episodes/default/eng`,
         ),
         this.client.get(`/${type.toLowerCase()}/${tvdbid}/extended`),
+        this.client.get(`/${type.toLowerCase()}/${tvdbid}/translations/eng`),
       ])
       main.data.data.artworks = extened.data.data.artworks
+      main.data.data.translations = translationseng.data.data
       return main
     } else {
       return this.client.get(`/${type.toLowerCase()}/${tvdbid}/extended`)

@@ -15,6 +15,7 @@ import { ImportApiModule } from '../modules/import-api/import-api.module'
 import { SettingsApiModule } from '../modules/settings-api/settings-api.module'
 import { SettingsModule } from '../modules/settings/settings.module'
 import { TheTvDbApiModule } from '../modules/thetvdbapi/thetvdbapi.module'
+import { FileManagerApiModule } from '../modules/file-manager-api/file-manager-api.module'
 import { ServerConfig } from './server.config'
 
 @Module({
@@ -38,6 +39,7 @@ export class ServerModule {
         ImportApiModule,
         SettingsApiModule,
         TheTvDbApiModule,
+        FileManagerApiModule,
       ],
     }
   }

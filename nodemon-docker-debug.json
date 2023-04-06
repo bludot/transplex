@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "ts",
+  "ignore": ["src/**/*.spec.ts"],
+  "exec": "yarn && yarn build &&  ENV=local yarn typeorm migration:run && yarn debug ls && node --nolazy -r ts-node/register src/main.ts"
+}

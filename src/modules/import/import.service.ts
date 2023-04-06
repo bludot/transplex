@@ -69,7 +69,6 @@ export class ImportService {
     }
     const ext = fileName.split('.').pop()
     const season = fileData.seasons[0] || 1
-    console.log(fileData)
     return `${fileData.title} - S${season}E${fileData.episodeNumbers[0]}.${ext}`
   }
 
@@ -110,7 +109,7 @@ export class ImportService {
         try {
           const fileName = this.translateFileName(file.name, file.data)
           return promisify(fs.copyFile)(
-            `${transmissionDownloads}/${file.name}`,
+            `${transmissionDownloads}/complete/${file.name}`,
             `${this.settingsService.getSettingSync(
               'IMPORT_ROOT',
             )}/${this.processImportDir(media.type as MediaType)}/${

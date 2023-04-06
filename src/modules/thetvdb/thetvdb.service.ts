@@ -88,11 +88,9 @@ export class TheTvDbService {
     const cache = await this.cacheService.get(`metadata_${thetvdbid}`)
 
     if (!cache) {
-      console.log('no cache!')
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       const { data } = await this.v4client.getMetadata(thetvdbid, type)
-      console.log('got metadata!', data)
       await this.cacheService.set(`metadata_${thetvdbid}`, JSON.stringify(data))
       return data
     }
@@ -100,7 +98,6 @@ export class TheTvDbService {
   }
 
   async getMetadataByTvDbId(tvdbid: string, mediaType: MediaType) {
-    console.log('RUNNING THIS')
     const type = this.type(mediaType)
     const cache = await this.cacheService.get(`metadata_${tvdbid}`)
     if (!cache) {
@@ -210,7 +207,7 @@ export class TheTvDbService {
 
     if (!cache) {
       const { data } = await this.v4client.searchMetadata(query, type)
-      console.log(data)
+
       await this.cacheService.set(
         `search_${query}_${type}`,
         JSON.stringify(data),
@@ -229,9 +226,9 @@ export class TheTvDbService {
     const {
       data: { data },
     } = await this.v4client.searchAny(query)
-    console.log(data)
     return data.map((item: any) => ({
       ...item,
+      name: item.translations.eng,
       anidbid: this.getAnidbid(item.id?.replace(/[^0-9.]/gm, '')),
     }))
   }

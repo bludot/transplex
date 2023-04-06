@@ -5,17 +5,20 @@ services:
       context: .
       dockerfile: 'Dockerfile.local'
     command: "/bin/bash -c 'yarn && yarn build &&  ENV=local yarn typeorm migration:run && yarn start:dev'"
+    #command: "/bin/bash -c 'yarn && yarn build &&  ENV=local yarn typeorm migration:run && yarn debug'"
     env_file: .env
     depends_on:
       - postgres
 #      - manticore
+    tty: true
     volumes:
       - '$HOME/Documents/TransplexFiles/:/usr/src/local/'
       - '.:/usr/src/app'
       - 'transplex-api_deps:/usr/src/app/node_modules'
       - '$HOME/Documents/TransmissionDownloads:/downloads'
     ports:
-      - '1337:3000'
+      - '1337:1337'
+      - '9229:9229'
     networks:
       - transplex-api-network
   postgres:

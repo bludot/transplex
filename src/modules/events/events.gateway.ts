@@ -24,12 +24,10 @@ export class EventsGateway
   server: Server
   wsClients = []
   afterInit() {
-    console.log('init')
     this.server.emit('testing', { do: 'stuff' })
   }
 
   handleConnection(client: Socket, ...args: any[]) {
-    console.log('connecting', args)
     this.wsClients.push(client)
     this.broadcast('connection', { connected: true })
   }

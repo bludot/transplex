@@ -31,4 +31,8 @@ export class MediaService {
   async getMediaById(id: string): Promise<IMedia> {
     return this.repo.findOneById(id)
   }
+
+  async getMediaByTheTvDbId(thetvdbid: number): Promise<IMedia> {
+    return this.repo.findOneByTheTvDbId(thetvdbid)
+  }
 }
